@@ -20,7 +20,7 @@ Para que o código funcione, é necessário que se tenha o [node.js](https://nod
 
 1. Clone esse repositório usando o comando
    ```
-   git clone https://github.com/JoseMatheusR/Akashic_Records.git
+   git clone https://github.com/JoseMatheusR/entrega_sprint01_Blockchain.git
    ```
 2. Navegue até o diretório onde o arquivo se encontra
 3. Instale as depedências usando o comando a seguir no terminal:
