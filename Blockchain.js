@@ -10,7 +10,6 @@ class Blockchain {
         this.difficulty = 3;
         this.pendingTransactions = [];
         this.reward = 10;
-        this.addressPattern = /^zezo.{46}$/
     }
 
     createGenesis() {
