@@ -38,12 +38,12 @@ class Blockchain {
         if (!transaction.destination || transaction.quantity <= 0) {
             throw new Error('Invalid transaction');
         } 
-        console.log("validating address...")
-        if(!this.addressPattern.test(transaction.origin) || !this.addressPattern.test(transaction.destination)){
+        console.log("validating address...");
+        if(!this.isAddressValid(transaction.origin) || !this.isAddressValid(transaction.destination)){
             throw new Error('Invalid Address');     
         }
         this.pendingTransactions.push(transaction);
-        console.log("Transaction successfully created")
+        console.log("Transaction successfully created");
     }
 
     createNewAddress(){
@@ -66,7 +66,7 @@ class Blockchain {
     }
 
     isAddressValid(address){
-        return this.addressPattern.test(address);
+        return /^zezo[a-fA-F0-9]{46}$/.test(address);
     }
 
     isChainValid() {
