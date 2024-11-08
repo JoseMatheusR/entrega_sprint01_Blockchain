@@ -3,7 +3,6 @@
   "version": "1.0.0",
   "main": "main.js",
   "module": "",
-  "devDependencies": {},
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -13,6 +12,7 @@
   "description": "",
   "dependencies": {
     "crypto-js": "^4.2.0",
-    "date-fns": "^4.1.0"
+    "date-fns": "^4.1.0",
+    "elliptic": "^6.6.0"
   }
 }
