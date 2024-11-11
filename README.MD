@@ -10,6 +10,7 @@ Entrega da primeira sprint do projeto de bolsas de Blockchain da Compass UOL. O 
 - Validar a integridade da blockchain como um todo;
 - Sistema de recompensa simples para mineradores;
 - Geração de endereços de usuário de forma segura e validação de endereços.
+- Histórico de transações por meio de um endereço
 
 ## Instalação
 
@@ -56,6 +57,7 @@ Para que o código funcione, é necessário que o [Node.js](https://nodejs.org/e
      - **`createTransaction`**: Adiciona uma nova transação à lista de transações pendentes, que serão incluídas no próximo bloco minerado.
      - **`createNewAddress`**: Gera um novo endereço de usuário baseado em uma chave pública gerada aleatoriamente.
      - **`isAddressValid`**: Valida se o endereço gerado está no formato correto.
+     - **`getUserTransactions`**: Retorna todas as transações geradas por determinado endereço.
      - **`isChainValid`**: Verifica se a blockchain inteira é válida, comparando os hashes dos blocos e verificando se eles estão corretamente encadeados. Garante que a cadeia não foi alterada.
 
 Essas funções combinadas permitem que a blockchain registre transações, realize mineração, valide a integridade dos blocos e mantenha um histórico seguro de todas as transações feitas.
@@ -80,6 +82,10 @@ blockchain.chain.forEach((block, index) => {
         console.log(  `Transaction: ${txIndex + 1}: ${tx.origin || 'Mining Reward'} -> ${tx.destination} | ${tx.quantity} ${tx.currency}`);
     });
 });
+
+// Registro de transações de usuário
+blockchain.getUserTransactions(userAddresses[0])
+
 ```
 
 ### Funcionamento do processo de mineração
