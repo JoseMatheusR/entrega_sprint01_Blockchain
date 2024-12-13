@@ -24,13 +24,12 @@ class Blockchain {
         const rewardTransaction = new Transaction(null, this.reward, "Bitcoin", rewardAddress);
         console.log("Mining Block...");
         this.pendingTransactions.push(rewardTransaction);
-
+    
         let block = new Block(format(Date.now(), 'yyyy-MM-dd HH:mm:ss'), this.pendingTransactions, this.getLastBlock().hash);
         block.mineBlock(this.difficulty);
         console.log('Block successfully mined');
-  
-        this.chain.push(block);
-        this.pendingTransactions = [];
+    
+        return block;
     }
 
     createTransaction(transaction) {
@@ -68,13 +67,28 @@ class Blockchain {
         return /^zezo[a-fA-F0-9]{46}$/.test(address);
     }
 
-    isChainValid() {
-        for (let i = 1; i < this.chain.length; i++) {
-            const currentBlock = this.chain[i];
-            const previousBlock = this.chain[i - 1];
+    validateAndAddBlock(block) {
+        const lastBlock = this.getLastBlock();
+    
+        if (block.previousHash !== lastBlock.hash) {
+            throw new Error('Invalid block: Previous hash mismatch');
+        }
+        if (block.hash !== block.hashfunction()) {
+            throw new Error('Invalid block: Hash does not match');
+        }
+    
+        this.chain.push(block);
+        console.log('Block successfully added to the chain');
+    }
+    
 
+    isChainValid(chain = this.chain) {
+        for (let i = 1; i < chain.length; i++) {
+            const currentBlock = chain[i];
+            const previousBlock = chain[i - 1];
+    
             if (currentBlock.previousHash !== previousBlock.hash) {
-                return false;  
+                return false;
             }
             if (currentBlock.hash !== currentBlock.hashfunction()) {
                 return false;
@@ -82,6 +96,7 @@ class Blockchain {
         }
         return true;
     }
+    
 }
 
 module.exports.Blockchain = Blockchain
