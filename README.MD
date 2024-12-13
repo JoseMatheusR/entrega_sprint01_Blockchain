@@ -9,8 +9,11 @@ Entrega da primeira sprint do projeto de bolsas de Blockchain da Compass UOL. O 
 - Implementação de um sistema simples de `Proof of Work`, utilizando a dificuldade da rede;
 - Validar a integridade da blockchain como um todo;
 - Sistema de recompensa simples para mineradores;
-- Geração de endereços de usuário de forma segura e validação de endereços.
-- Histórico de transações por meio de um endereço
+- Geração de endereços de usuário de forma segura e validação de endereços;
+- Histórico de transações por meio de um endereço;
+- Suporte a múltiplos nós na rede, incluindo sincronização de blocos;
+- Propagação de transações e blocos pela rede;
+- Resolução de conflitos para garantir consenso entre os nós.
 
 ## Instalação
 
@@ -31,10 +34,14 @@ Para que o código funcione, é necessário que o [Node.js](https://nodejs.org/e
    ```bash
    npm install crypto-js date-fns elliptic
    ```
-4. Execute o programa no terminal:
+4. Execute o programa no terminal usando:
    ```bash
    node main.js
    ```
+ou
+```bash
+node testBlockChain.js
+```
 
 ## Estrutura do código
 
@@ -58,14 +65,22 @@ Para que o código funcione, é necessário que o [Node.js](https://nodejs.org/e
      - **`createNewAddress`**: Gera um novo endereço de usuário baseado em uma chave pública gerada aleatoriamente.
      - **`isAddressValid`**: Valida se o endereço gerado está no formato correto.
      - **`getUserTransactions`**: Retorna todas as transações geradas por determinado endereço.
-     - **`isChainValid`**: Verifica se a blockchain inteira é válida, comparando os hashes dos blocos e verificando se eles estão corretamente encadeados. Garante que a cadeia não foi alterada.
+     - **`validateAndAddBlock`**: Valida e adiciona um bloco à blockchain, garantindo que o bloco seja válido antes de integrá-lo.
+     - **`isChainValid`**: Verifica se a blockchain inteira é válida, comparando os hashes dos blocos e verificando se eles estão corretamente encadeados.
 
-Essas funções combinadas permitem que a blockchain registre transações, realize mineração, valide a integridade dos blocos e mantenha um histórico seguro de todas as transações feitas.
+### 4. **`Node` (Classe)**
+   - **Função**: Representa um nó na rede blockchain, permitindo comunicação, propagação de blocos e transações e resolução de conflitos.
+   - **Funções internas**:
+     - **`connectToNetwork`**: Conecta o nó a outros nós na rede.
+     - **`broadcastTransaction`**: Propaga uma transação para todos os nós conectados.
+     - **`broadcastBlock`**: Propaga um bloco para todos os nós conectados.
+     - **`receiveTransaction`**: Recebe uma transação propagada de outro nó e a adiciona à lista de transações pendentes.
+     - **`receiveBlock`**: Recebe um bloco propagado de outro nó e tenta validá-lo e adicioná-lo à cadeia.
+     - **`resolveConflicts`**: Verifica as cadeias dos nós conectados e adota a mais longa e válida, garantindo o consenso.
 
-### Exemplo de uso:
+## Exemplos de Uso
 
-Exemplo simples de criação de uma nova blockchain, criação de transações e mineração de blocos:
-
+### Exemplo 1: Criar e minerar uma transação
 ```javascript
 let blockchain = new Blockchain();
 
@@ -75,28 +90,41 @@ blockchain.createTransaction(new Transaction("Matheus", 13, "bitcoin", "Sávio")
 // Minerando transações pendentes
 blockchain.minePendingTransactions("MinerAddress");
 
-// Printando toda a rede
+// Exibindo toda a blockchain
 blockchain.chain.forEach((block, index) => {
     console.log(`\nBlock ${index} \n[Timestamp: ${block.timestamp} \nNounce: ${block.nounce}\nHash: ${block.hash} \nPrevious Hash: ${block.previousHash}]`);
     block.transactions.forEach((tx, txIndex) => {
-        console.log(  `Transaction: ${txIndex + 1}: ${tx.origin || 'Mining Reward'} -> ${tx.destination} | ${tx.quantity} ${tx.currency}`);
+        console.log(`Transaction: ${txIndex + 1}: ${tx.origin || 'Mining Reward'} -> ${tx.destination} | ${tx.quantity} ${tx.currency}`);
     });
 });
-
-// Registro de transações de usuário
-blockchain.getUserTransactions(userAddresses[0])
-
 ```
 
-### Funcionamento do processo de mineração
+### Exemplo 2: Registro de transações de usuário
+```javascript
+// Gerando um novo endereço de usuário
+let newAddress = blockchain.createNewAddress();
 
-- **Proof of Work**: A função `mineBlock` executa um loop até que um hash válido seja gerado (um hash que tenha uma quantidade de zeros igual ao valor da dificuldade determinada na classe `Blockchain`).
-- **Recompensa**: "Mineradores" são recompensados por minerar e adicionar um bloco à rede com sucesso. A própria rede gera uma transação nova com o valor de recompensa determinado, que poderá ser adicionada ao próximo bloco a entrar na rede, validando-a.
+// Verificando o histórico de transações do endereço
+let transactions = blockchain.getUserTransactions(newAddress);
+console.log(transactions);
+```
 
-### Validando a Blockchain
+### Exemplo 3: Resolução de Conflitos na Rede
+```javascript
+let node1 = new Node();
+let node2 = new Node();
 
-A função `isChainValid` verifica a integridade da blockchain como um todo, verificando os hashes de cada bloco para garantir que nenhum deles foi alterado.
+node1.connectToNetwork(node2);
 
-### Licença
+// Broadcast de transações e blocos
+node1.broadcastTransaction(new Transaction("Alice", 50, "bitcoin", "Bob"));
+node1.broadcastBlock(blockchain.getLastBlock());
+
+// Resolvendo conflitos para garantir consenso
+node2.resolveConflicts();
+```
+
+## Licença
 
 This project is open-source and licensed under the MIT License. Feel free to modify and use it as needed.
+
